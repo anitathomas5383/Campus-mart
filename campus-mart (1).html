@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Mart</title>
+
+<style>
+/* ================= GENERAL ================= */
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
+body{background:#f5f7fb;color:#222;}
+label{font-size:14px;color:#444;}
+
+/* ================= LOGIN / REGISTER ================= */
+#authPage{
+    min-height:100vh;display:flex;justify-content:center;align-items:center;
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);padding:20px;
+}
+.loginBox{
+    width:370px;max-width:100%;background:white;padding:35px;border-radius:22px;
+    box-shadow:0 10px 35px rgba(0,0,0,0.25);text-align:center;
+}
+.logo{font-size:32px;font-weight:bold;color:#4f46e5;}
+.tagline{color:#777;margin:8px 0 25px;}
+.inputBox{position:relative;margin:15px 0;}
+.inputBox input{width:100%;padding:14px;border:1px solid #ddd;border-radius:10px;font-size:15px;}
+.eye{position:absolute;right:13px;top:13px;cursor:pointer;}
+.mainBtn{
+    width:100%;padding:14px;background:#4f46e5;color:white;border:none;
+    border-radius:10px;cursor:pointer;font-size:16px;margin-top:10px;
+}
+.mainBtn:hover{background:#3730a3;}
+.switchText{margin-top:18px;}
+.switchText span{color:#4f46e5;font-weight:bold;cursor:pointer;}
+.authError{
+    display:none;background:#fee2e2;color:#991b1b;padding:10px;border-radius:8px;
+    font-size:14px;margin-top:10px;text-align:left;
+}
+.authSuccess{
+    display:none;background:#dcfce7;color:#166534;padding:10px;border-radius:8px;
+    font-size:14px;margin-top:10px;text-align:left;
+}
+
+/* ================= MAIN PAGE ================= */
+#mainPage{display:none;}
+header{
+    background:white;padding:18px 6%;display:flex;justify-content:space-between;
+    align-items:center;box-shadow:0 2px 12px rgba(0,0,0,0.08);flex-wrap:wrap;gap:10px;
+}
+.brand{color:#4f46e5;font-size:25px;font-weight:bold;}
+nav{display:flex;align-items:center;flex-wrap:wrap;}
+nav button{border:none;background:none;cursor:pointer;margin-left:15px;font-size:14px;}
+nav button:hover{color:#4f46e5;}
+.userTag{font-size:14px;color:#4f46e5;font-weight:bold;margin-left:15px;}
+
+/* ================= WELCOME ================= */
+#welcome{
+    min-height:85vh;display:flex;flex-direction:column;justify-content:center;
+    align-items:center;text-align:center;padding:30px;
+}
+#welcome h1{color:#4f46e5;font-size:48px;}
+#welcome p{max-width:650px;color:#666;font-size:18px;line-height:1.6;margin:20px 0;}
+
+/* ================= SECTION ================= */
+.section{display:none;padding:40px 7%;}
+.section h2{margin-bottom:25px;}
+.empty{color:#777;padding:20px;background:white;border-radius:12px;}
+
+/* ================= SEARCH ================= */
+.search{width:100%;padding:14px;border:1px solid #ddd;border-radius:10px;margin-bottom:25px;}
+
+/* ================= PRODUCTS ================= */
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:25px;}
+.product{
+    position:relative;background:white;padding:18px;border-radius:17px;
+    box-shadow:0 5px 18px rgba(0,0,0,0.08);
+}
+.product.soldItem{opacity:0.75;}
+.product.soldItem .productImage{filter:grayscale(1);}
+.productImage{
+    height:160px;background:#e9e9ff;border-radius:13px;display:flex;
+    justify-content:center;align-items:center;font-size:60px;margin-bottom:15px;overflow:hidden;
+}
+.productImage img{width:100%;height:100%;object-fit:cover;}
+.product h3{margin-bottom:8px;}
+.productDescription{color:#666;font-size:14px;line-height:1.5;word-break:break-word;}
+.sellerLine{font-size:12px;color:#888;margin-top:8px;}
+.price{display:block;color:#4f46e5;font-size:22px;font-weight:bold;margin:12px 0;}
+.soldBadge{
+    position:absolute;top:28px;left:28px;background:#dc2626;color:white;
+    padding:6px 14px;border-radius:20px;font-size:13px;font-weight:bold;z-index:2;
+}
+.availBadge{
+    display:inline-block;background:#dcfce7;color:#166534;padding:4px 10px;
+    border-radius:20px;font-size:12px;font-weight:bold;
+}
+.soldText{
+    display:inline-block;background:#fee2e2;color:#991b1b;padding:4px 10px;
+    border-radius:20px;font-size:12px;font-weight:bold;
+}
+
+/* ================= PRODUCT BUTTONS ================= */
+.productButtons{display:flex;gap:8px;flex-wrap:wrap;}
+.productButtons button{flex:1;min-width:110px;padding:11px;color:white;border:none;border-radius:8px;cursor:pointer;}
+.bargainBtn{background:#4f46e5;}
+.bargainBtn:hover{background:#3730a3;}
+.confirmBtn{background:#16a34a;}
+.confirmBtn:hover{background:#15803d;}
+.soldBtn{background:#f59e0b;}
+.soldBtn:hover{background:#d97706;}
+.removeBtn{background:#dc2626;}
+.removeBtn:hover{background:#b91c1c;}
+.disabledBtn{
+    width:100%;padding:11px;background:#9ca3af;color:white;border:none;
+    border-radius:8px;cursor:not-allowed;
+}
+
+/* ================= BARGAIN AREA ================= */
+.bargainArea{display:none;margin-top:15px;padding:15px;background:#f4f4ff;border-radius:12px;}
+.bargainArea.open{display:block;}
+.chatMessages{
+    height:140px;overflow-y:auto;background:white;border:1px solid #ddd;
+    border-radius:8px;padding:10px;margin-bottom:10px;
+}
+.message{padding:8px;background:#eeeeee;border-radius:8px;margin-bottom:7px;font-size:14px;word-break:break-word;}
+.myMessage{background:#ddd8ff;text-align:right;}
+.bargainInput{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-bottom:8px;}
+.sendBtn{width:100%;padding:10px;background:#4f46e5;color:white;border:none;border-radius:8px;cursor:pointer;}
+.agreedPrice{display:none;margin-top:12px;padding:12px;background:#dcfce7;color:#166534;border-radius:8px;}
+.agreedPrice.open{display:block;}
+.miniConfirm{
+    width:100%;padding:11px;margin-top:10px;background:#16a34a;color:white;
+    border:none;border-radius:8px;cursor:pointer;
+}
+
+/* ================= PRIVATE CHAT ================= */
+.sender{display:block;font-size:11px;font-weight:bold;color:#4f46e5;margin-bottom:2px;}
+.msgTime{display:block;font-size:10px;color:#888;margin-top:2px;}
+.systemMsg{background:#fef3c7;color:#92400e;text-align:center;}
+.privateNote{font-size:12px;color:#777;margin-bottom:8px;}
+.chatCard{
+    max-width:650px;background:white;padding:18px;border-radius:15px;
+    box-shadow:0 5px 18px rgba(0,0,0,0.08);margin-bottom:20px;
+}
+.chatCard .chatMessages{height:200px;background:#fafaff;}
+.chatHead{margin-bottom:12px;font-size:14px;line-height:1.7;}
+.roleTag{
+    display:inline-block;background:#e9e9ff;color:#4f46e5;padding:3px 10px;
+    border-radius:20px;font-size:12px;font-weight:bold;
+}
+.priceRow{display:flex;gap:8px;margin-top:10px;}
+.priceRow input{flex:1;margin-bottom:0;}
+.agreeBtn{
+    padding:10px 14px;background:#16a34a;color:white;border:none;
+    border-radius:8px;cursor:pointer;white-space:nowrap;
+}
+.agreeBtn:hover{background:#15803d;}
+.waiting{padding:10px;background:#f3f4f6;color:#555;border-radius:8px;font-size:14px;margin-top:8px;}
+.msgBtn{background:#0ea5e9;}
+.msgBtn:hover{background:#0284c7;}
+
+/* ================= SELL ================= */
+.formBox{
+    max-width:550px;background:white;padding:25px;border-radius:15px;
+    box-shadow:0 5px 18px rgba(0,0,0,0.08);
+}
+.formBox input,.formBox select,.formBox textarea{
+    width:100%;padding:13px;margin:8px 0 15px;border:1px solid #ddd;border-radius:8px;
+}
+.formBox textarea{height:100px;}
+
+/* ================= ORDER ================= */
+.orderBox{
+    max-width:600px;background:white;padding:30px;border-radius:17px;
+    box-shadow:0 5px 18px rgba(0,0,0,0.08);margin-bottom:30px;
+}
+.orderProduct{background:#f3f3ff;padding:18px;border-radius:10px;margin-bottom:20px;}
+.orderBox input,.orderBox textarea{
+    width:100%;padding:13px;margin:8px 0 15px;border:1px solid #ddd;border-radius:8px;
+}
+.orderBox textarea{height:100px;}
+.orderSuccess{
+    display:none;margin-top:20px;padding:20px;background:#dcfce7;color:#166534;border-radius:12px;
+}
+.orderSuccess h3{margin-bottom:10px;}
+.historyItem{
+    max-width:600px;background:white;padding:16px;border-radius:12px;margin-bottom:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,0.06);font-size:14px;line-height:1.7;
+}
+
+/* ================= MY LISTINGS ================= */
+.listRow{
+    display:flex;gap:15px;align-items:center;background:white;padding:15px;border-radius:14px;
+    box-shadow:0 3px 12px rgba(0,0,0,0.06);margin-bottom:14px;flex-wrap:wrap;
+}
+.listRow .thumb{
+    width:70px;height:70px;border-radius:10px;background:#e9e9ff;display:flex;
+    align-items:center;justify-content:center;font-size:32px;overflow:hidden;flex-shrink:0;
+}
+.listRow .thumb img{width:100%;height:100%;object-fit:cover;}
+.listRow .info{flex:1;min-width:150px;}
+.listRow .actions{display:flex;gap:8px;flex-wrap:wrap;}
+.listRow .actions button{padding:9px 14px;color:white;border:none;border-radius:8px;cursor:pointer;}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:700px){
+    header{flex-direction:column;gap:15px;}
+    nav button{margin:5px;}
+    #welcome h1{font-size:35px;}
+    .productButtons{flex-direction:column;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- ==================================================
+                LOGIN / REGISTER
+=================================================== -->
+<div id="authPage">
+
+<!-- LOGIN BOX -->
+<div class="loginBox" id="loginBox">
+    <div class="logo">🛍️ Campus Mart</div>
+    <div class="tagline">Buy • Sell • Connect on Campus</div>
+
+    <div class="inputBox">
+        <input type="text" id="loginUser" placeholder="Email or Username">
+    </div>
+
+    <div class="inputBox">
+        <input type="password" id="loginPass" placeholder="Password">
+        <span class="eye" onclick="togglePassword('loginPass')">👁️</span>
+    </div>
+
+    <div class="authError" id="loginError"></div>
+    <div class="authSuccess" id="loginSuccess"></div>
+
+    <button class="mainBtn" onclick="login()">Login</button>
+
+    <div class="switchText">
+        Don't have an account?
+        <span onclick="showAuth('register')">Register</span>
+    </div>
+</div>
+
+<!-- REGISTER BOX -->
+<div class="loginBox" id="registerBox" style="display:none">
+    <div class="logo">🛍️ Campus Mart</div>
+    <div class="tagline">Create your student account</div>
+
+    <div class="inputBox">
+        <input type="text" id="regName" placeholder="Full Name">
+    </div>
+
+    <div class="inputBox">
+        <input type="text" id="regUser" placeholder="Email or Username">
+    </div>
+
+    <div class="inputBox">
+        <input type="text" id="regPhone" placeholder="Contact Number">
+    </div>
+
+    <div class="inputBox">
+        <input type="password" id="regPass" placeholder="Password (min 4 characters)">
+        <span class="eye" onclick="togglePassword('regPass')">👁️</span>
+    </div>
+
+    <div class="inputBox">
+        <input type="password" id="regPass2" placeholder="Confirm Password">
+        <span class="eye" onclick="togglePassword('regPass2')">👁️</span>
+    </div>
+
+    <div class="authError" id="regError"></div>
+
+    <button class="mainBtn" onclick="register()">Create Account</button>
+
+    <div class="switchText">
+        Already registered?
+        <span onclick="showAuth('login')">Login</span>
+    </div>
+</div>
+
+</div>
+
+
+<!-- ==================================================
+                    MAIN PAGE
+=================================================== -->
+<div id="mainPage">
+
+<header>
+    <div class="brand">🛍️ Campus Mart</div>
+
+    <nav>
+        <button onclick="showSection('home')">Home</button>
+        <button onclick="showSection('products')">Products</button>
+        <button onclick="showSection('sell')">Sell</button>
+        <button onclick="showSection('myListings')">My Listings</button>
+        <button onclick="showSection('messages')">Messages</button>
+        <button onclick="showSection('orders')">Orders</button>
+        <button onclick="logout()">Logout</button>
+        <span class="userTag" id="userTag"></span>
+    </nav>
+</header>
+
+
+<!-- WELCOME -->
+<div id="welcome">
+    <h1>Welcome to Campus Mart 🎓</h1>
+    <p>
+        A student-friendly marketplace where college students can buy and sell
+        second-hand books, calculators, electronics, furniture and other
+        useful campus products.
+    </p>
+    <button class="mainBtn" style="width:220px" onclick="showSection('products')">
+        Explore Products
+    </button>
+</div>
+
+
+<!-- PRODUCTS -->
+<section id="products" class="section">
+    <h2>🛍️ Campus Products</h2>
+
+    <input class="search" id="search" placeholder="🔍 Search products..." onkeyup="renderProducts()">
+
+    <div class="products" id="productList"></div>
+</section>
+
+
+<!-- SELL -->
+<section id="sell" class="section">
+    <h2>➕ Sell Your Product</h2>
+
+    <div class="formBox">
+        <label>Product Name</label>
+        <input id="productName" placeholder="Enter product name">
+
+        <label>Category</label>
+        <select id="category">
+            <option>Books</option>
+            <option>Calculator</option>
+            <option>Electronics</option>
+            <option>Furniture</option>
+            <option>Other</option>
+        </select>
+
+        <label>Price (₹)</label>
+        <input type="number" id="productPrice" placeholder="Enter price" min="1">
+
+        <label>Description</label>
+        <textarea id="productDescription" placeholder="Describe your product"></textarea>
+
+        <label>Product Photo (optional)</label>
+        <input type="file" id="productImage" accept="image/*">
+
+        <button class="mainBtn" onclick="addProduct()">Publish Product</button>
+    </div>
+</section>
+
+
+<!-- MY LISTINGS -->
+<section id="myListings" class="section">
+    <h2>🏷️ My Listings</h2>
+    <div id="myListingsList"></div>
+</section>
+
+
+<!-- MESSAGES -->
+<section id="messages" class="section">
+    <h2>💬 My Messages</h2>
+    <p class="privateNote">🔒 Each chat is private. Only the buyer and the seller of that product can see it.</p>
+    <div id="messagesList"></div>
+</section>
+
+
+<!-- ORDERS -->
+<section id="orders" class="section">
+    <h2>📦 Confirm Your Order</h2>
+
+    <div class="orderBox">
+
+        <div class="orderProduct">
+            <p><b>Product:</b> <span id="orderProduct">-</span></p>
+            <br>
+            <p><b>Agreed Price:</b> ₹<span id="orderPrice">-</span></p>
+        </div>
+
+        <label>Full Name</label>
+        <input id="buyerName" placeholder="Enter your full name">
+
+        <label>Contact Number</label>
+        <input id="buyerPhone" placeholder="Enter contact number">
+
+        <label>Address</label>
+        <textarea id="buyerAddress" placeholder="Enter your address"></textarea>
+
+        <label>Campus Meeting / Delivery Location</label>
+        <input id="meetingLocation" placeholder="Example: College Main Gate">
+
+        <button class="mainBtn" onclick="confirmOrder()">✅ Confirm Order</button>
+
+        <div class="orderSuccess" id="orderSuccess">
+            <h3>🎉 Order Confirmed!</h3>
+            <p>Your order has been successfully confirmed.</p>
+            <br>
+            <p><b>Product:</b> <span id="successProduct"></span></p>
+            <p><b>Price:</b> ₹<span id="successPrice"></span></p>
+            <p><b>Meeting Location:</b> <span id="successLocation"></span></p>
+            <br>
+            <p>The buyer and seller can meet on campus to complete the transaction.
+               This item is now marked as <b>Sold</b>.</p>
+        </div>
+    </div>
+
+    <h2>🧾 My Order History</h2>
+    <div id="orderHistory"></div>
+</section>
+
+</div>
+
+
+<script>
+
+/* ==================================================
+                  STORAGE HELPERS
+   (data is saved in the browser with localStorage;
+    the login session is kept per tab)
+=================================================== */
+
+const KEY_USERS    = "cm_users";
+const KEY_PRODUCTS = "cm_products";
+const KEY_ORDERS   = "cm_orders";
+const KEY_CHATS    = "cm_chats";
+const KEY_SESSION  = "cm_session";
+
+function load(key, fallback){
+    try{
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+    }catch(e){
+        return fallback;
+    }
+}
+
+function save(key, value){
+    try{
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+    }catch(e){
+        alert("Storage is full. Try a smaller photo or remove old products.");
+        return false;
+    }
+}
+
+function getSession(){
+    try{ return sessionStorage.getItem(KEY_SESSION); }catch(e){ return null; }
+}
+
+function setSession(value){
+    try{
+        if(value) sessionStorage.setItem(KEY_SESSION, value);
+        else sessionStorage.removeItem(KEY_SESSION);
+    }catch(e){}
+}
+
+/* ==================================================
+                    STATE
+=================================================== */
+
+let currentUser     = null;     // username of the logged in user
+let currentSection  = "home";
+let selectedProduct = null;     // product chosen for ordering
+let selectedPrice   = "";
+let openChats       = {};       // product ids whose chat box is open
+let drafts          = {};       // unsent text typed in inputs
+
+/* Escape text so user input can't break the page */
+function esc(text){
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+function getProducts(){
+    const list = load(KEY_PRODUCTS, []);
+
+    /* remove old sample products from earlier version */
+    const cleaned = list.filter(function(p){
+        return !(p.seller === "demo" && /^p[1-4]$/.test(p.id));
+    });
+
+    if(cleaned.length !== list.length) save(KEY_PRODUCTS, cleaned);
+
+    return cleaned;
+}
+
+function userName(username){
+    const u = load(KEY_USERS, []).find(x => x.username === username);
+    return u ? u.name : username;
+}
+
+function timeStr(t){
+    return new Date(t).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+}
+
+/* keep what the user is typing when the page re-draws */
+document.addEventListener("input", function(e){
+    if(e.target.dataset && e.target.dataset.draft){
+        drafts[e.target.id] = e.target.value;
+    }
+});
+
+/* ==================================================
+              LOGIN / REGISTER SWITCH
+=================================================== */
+
+function showAuth(which){
+    document.getElementById("loginBox").style.display    = which === "login" ? "block" : "none";
+    document.getElementById("registerBox").style.display = which === "register" ? "block" : "none";
+    hideMsg("loginError"); hideMsg("loginSuccess"); hideMsg("regError");
+}
+
+function showMsg(id, text){
+    const el = document.getElementById(id);
+    el.innerText = text;
+    el.style.display = "block";
+}
+
+function hideMsg(id){
+    document.getElementById(id).style.display = "none";
+}
+
+function togglePassword(id){
+    const field = document.getElementById(id);
+    field.type = field.type === "password" ? "text" : "password";
+}
+
+/* ==================================================
+                    REGISTER
+=================================================== */
+
+function register(){
+
+    const name  = document.getElementById("regName").value.trim();
+    const user  = document.getElementById("regUser").value.trim().toLowerCase();
+    const phone = document.getElementById("regPhone").value.trim();
+    const pass  = document.getElementById("regPass").value;
+    const pass2 = document.getElementById("regPass2").value;
+
+    hideMsg("regError");
+
+    if(!name || !user || !phone || !pass || !pass2){
+        showMsg("regError", "Please fill all the fields.");
+        return;
+    }
+
+    if(pass.length < 4){
+        showMsg("regError", "Password must be at least 4 characters.");
+        return;
+    }
+
+    if(pass !== pass2){
+        showMsg("regError", "Passwords do not match.");
+        return;
+    }
+
+    const users = load(KEY_USERS, []);
+
+    if(users.some(u => u.username === user)){
+        showMsg("regError", "This email/username is already registered. Please login.");
+        return;
+    }
+
+    users.push({username:user, name:name, phone:phone, password:pass});
+
+    if(!save(KEY_USERS, users)) return;
+
+    ["regName","regUser","regPhone","regPass","regPass2"].forEach(function(id){
+        document.getElementById(id).value = "";
+    });
+
+    showAuth("login");
+    document.getElementById("loginUser").value = user;
+    document.getElementById("loginPass").value = "";
+    showMsg("loginSuccess", "Registration successful! Please login.");
+}
+
+/* ==================================================
+                    LOGIN
+   Only registered users can log in.
+=================================================== */
+
+function login(){
+
+    const user = document.getElementById("loginUser").value.trim().toLowerCase();
+    const pass = document.getElementById("loginPass").value;
+
+    hideMsg("loginError");
+    hideMsg("loginSuccess");
+
+    if(!user || !pass){
+        showMsg("loginError", "Please enter username and password.");
+        return;
+    }
+
+    const found = load(KEY_USERS, []).find(u => u.username === user);
+
+    if(!found){
+        showMsg("loginError", "No account found with this email/username. Please register first.");
+        return;
+    }
+
+    if(found.password !== pass){
+        showMsg("loginError", "Incorrect password. Try again.");
+        return;
+    }
+
+    startSession(found.username);
+}
+
+function startSession(username){
+
+    currentUser = username;
+    setSession(username);
+
+    const me = load(KEY_USERS, []).find(u => u.username === username);
+
+    document.getElementById("userTag").innerText = "👤 " + (me ? me.name : username);
+
+    if(me){
+        document.getElementById("buyerName").value  = me.name;
+        document.getElementById("buyerPhone").value = me.phone;
+    }
+
+    document.getElementById("authPage").style.display = "none";
+    document.getElementById("mainPage").style.display = "block";
+
+    document.getElementById("loginUser").value = "";
+    document.getElementById("loginPass").value = "";
+
+    showSection("home");
+}
+
+/* ==================================================
+                    LOGOUT
+=================================================== */
+
+function logout(){
+
+    currentUser = null;
+    selectedProduct = null;
+    openChats = {};
+    drafts = {};
+    setSession(null);
+
+    document.getElementById("mainPage").style.display = "none";
+    document.getElementById("authPage").style.display = "flex";
+    showAuth("login");
+}
+
+/* ==================================================
+                    SECTIONS
+=================================================== */
+
+function showSection(section){
+
+    currentSection = section;
+
+    document.getElementById("welcome").style.display = "none";
+
+    document.querySelectorAll(".section").forEach(function(item){
+        item.style.display = "none";
+    });
+
+    if(section === "home"){
+        document.getElementById("welcome").style.display = "flex";
+        return;
+    }
+
+    refreshCurrent();
+
+    document.getElementById(section).style.display = "block";
+}
+
+function refreshCurrent(){
+    if(currentSection === "products")   renderProducts();
+    if(currentSection === "myListings") renderMyListings();
+    if(currentSection === "messages")   renderMessages();
+    if(currentSection === "orders")     renderOrderPage();
+    scrollChats();
+}
+
+function scrollChats(){
+    document.querySelectorAll(".chatMessages").forEach(function(box){
+        box.scrollTop = box.scrollHeight;
+    });
+}
+
+/* ==================================================
+                    CHAT HELPERS
+   A chat belongs to ONE product + ONE buyer.
+   Only that buyer and the product's seller can see it.
+=================================================== */
+
+function getChats(){
+    return load(KEY_CHATS, []);
+}
+
+function findChat(productId, buyer){
+    return getChats().find(c => c.productId === productId && c.buyer === buyer);
+}
+
+function ensureChat(p){
+
+    const chats = getChats();
+    let chat = chats.find(c => c.productId === p.id && c.buyer === currentUser);
+
+    if(!chat){
+        chat = {
+            id: "c" + Date.now() + Math.floor(Math.random() * 1000),
+            productId: p.id,
+            productName: p.name,
+            buyer: currentUser,
+            seller: p.seller,
+            messages: [],
+            agreed: null
+        };
+        chats.push(chat);
+        save(KEY_CHATS, chats);
+    }
+
+    return chat;
+}
+
+function addToChat(chatId, message){
+
+    const chats = getChats();
+    const chat  = chats.find(c => c.id === chatId);
+
+    if(!chat) return false;
+
+    /* safety: only the two people in the chat can write */
+    if(chat.buyer !== currentUser && chat.seller !== currentUser) return false;
+
+    message.time = Date.now();
+    chat.messages.push(message);
+
+    if(message.setAgreed !== undefined){
+        chat.agreed = message.setAgreed;
+        delete message.setAgreed;
+    }
+
+    return save(KEY_CHATS, chats);
+}
+
+function threadHTML(chat){
+
+    if(!chat || chat.messages.length === 0){
+        return '<div class="message">No messages yet. Say hello! 👋</div>';
+    }
+
+    return chat.messages.map(function(m){
+
+        if(m.system){
+            return '<div class="message systemMsg">' + esc(m.text) + '</div>';
+        }
+
+        const mine = m.from === currentUser;
+
+        return '<div class="message' + (mine ? ' myMessage' : '') + '">' +
+            '<span class="sender">' + (mine ? 'You' : esc(userName(m.from))) + '</span>' +
+            esc(m.text) +
+            '<span class="msgTime">' + timeStr(m.time) + '</span>' +
+            '</div>';
+
+    }).join("");
+}
+
+function draftValue(id){
+    return esc(drafts[id] || "");
+}
+
+/* ==================================================
+                RENDER PRODUCT LIST
+=================================================== */
+
+function productImageHTML(p){
+    return p.image
+        ? '<img src="' + p.image + '" alt="">'
+        : (p.emoji || "🛍️");
+}
+
+function renderProducts(){
+
+    const query = document.getElementById("search").value.toLowerCase();
+    const list  = document.getElementById("productList");
+
+    const items = getProducts().filter(function(p){
+        return p.name.toLowerCase().includes(query);
+    });
+
+    if(items.length === 0){
+        list.innerHTML = '<div class="empty">No products yet. Go to Sell and add the first one.</div>';
+        return;
+    }
+
+    list.innerHTML = items.map(function(p){
+
+        const isSold = p.status === "sold";
+        const isMine = p.seller === currentUser;
+
+        let buttons = "";
+        let bargainHTML = "";
+
+        if(isSold){
+
+            buttons = '<button class="disabledBtn" disabled>❌ Sold Out</button>';
+
+            if(isMine){
+                buttons += '<div class="productButtons" style="margin-top:8px">' +
+                    '<button class="removeBtn" data-action="remove" data-id="' + p.id + '">🗑️ Remove</button></div>';
+            }
+        }
+        else if(isMine){
+
+            const count = getChats().filter(c => c.productId === p.id).length;
+
+            buttons =
+                '<div class="productButtons">' +
+                '<button class="soldBtn" data-action="markSold" data-id="' + p.id + '">✔ Mark as Sold</button>' +
+                '<button class="removeBtn" data-action="remove" data-id="' + p.id + '">🗑️ Remove</button>' +
+                '</div>' +
+                '<div class="productButtons" style="margin-top:8px">' +
+                '<button class="msgBtn" data-action="openMessages">💬 Buyer Messages (' + count + ')</button>' +
+                '</div>';
+        }
+        else{
+
+            const chat = findChat(p.id, currentUser);
+
+            buttons =
+                '<div class="productButtons">' +
+                '<button class="bargainBtn" data-action="bargain" data-id="' + p.id + '">💬 Bargain</button>' +
+                '<button class="confirmBtn" data-action="order" data-id="' + p.id + '">✅ Confirm Order</button>' +
+                '</div>';
+
+            let agreedBox = "";
+
+            if(chat && chat.agreed){
+                agreedBox =
+                    '<div class="agreedPrice open">' +
+                    '<b>🤝 Seller agreed on a price!</b><br><br>Final Price: ₹' + esc(chat.agreed) +
+                    '<button class="miniConfirm" data-action="orderAgreed" data-id="' + p.id + '">✅ Confirm Order</button>' +
+                    '</div>';
+            }
+
+            bargainHTML =
+                '<div class="bargainArea' + (openChats[p.id] ? ' open' : '') + '">' +
+                    '<div class="privateNote">🔒 Private chat: only you and the seller</div>' +
+                    '<div class="chatMessages">' + threadHTML(chat) + '</div>' +
+                    '<input class="bargainInput" data-draft="1" placeholder="Type your message..." id="bin-' + p.id + '" value="' + draftValue("bin-" + p.id) + '">' +
+                    '<button class="sendBtn" data-action="send" data-id="' + p.id + '">Send Message</button>' +
+                    agreedBox +
+                '</div>';
+        }
+
+        return '<div class="product' + (isSold ? ' soldItem' : '') + '">' +
+            (isSold ? '<div class="soldBadge">SOLD</div>' : '') +
+            '<div class="productImage">' + productImageHTML(p) + '</div>' +
+            '<h3>' + esc(p.name) + '</h3>' +
+            '<p class="productDescription">' + esc(p.description) + '</p>' +
+            '<div class="sellerLine">Seller: ' + esc(p.sellerName) + (isMine ? ' (you)' : '') + '</div>' +
+            '<span class="price">₹' + esc(p.price) + '</span>' +
+            buttons + bargainHTML +
+            '</div>';
+
+    }).join("");
+}
+
+/* ==================================================
+          CLICK HANDLER FOR ALL ACTION BUTTONS
+=================================================== */
+
+document.addEventListener("click", function(e){
+
+    const btn = e.target.closest("[data-action]");
+    if(!btn) return;
+
+    const action = btn.dataset.action;
+    const id     = btn.dataset.id;
+
+    if(action === "bargain")      openBargain(id);
+    if(action === "send")         sendInline(id);
+    if(action === "sendChat")     sendFromMessages(id);
+    if(action === "agree")        agreePrice(id);
+    if(action === "order")        startOrder(id, false);
+    if(action === "orderAgreed")  startOrder(id, true);
+    if(action === "markSold")     markSold(id);
+    if(action === "remove")       removeProduct(id);
+    if(action === "openMessages") showSection("messages");
+});
+
+/* Press Enter to send */
+document.addEventListener("keydown", function(e){
+
+    if(e.key !== "Enter") return;
+
+    const el = e.target;
+    if(!el.id) return;
+
+    if(el.id.indexOf("bin-") === 0)  sendInline(el.id.slice(4));
+    if(el.id.indexOf("min-") === 0)  sendFromMessages(el.id.slice(4));
+});
+
+/* ==================================================
+              BUYER: BARGAIN ON A PRODUCT
+=================================================== */
+
+function openBargain(id){
+
+    openChats[id] = true;
+    renderProducts();
+    scrollChats();
+
+    const input = document.getElementById("bin-" + id);
+    if(input){
+        input.scrollIntoView({behavior:"smooth", block:"center"});
+        input.focus();
+    }
+}
+
+function sendInline(productId){
+
+    const input = document.getElementById("bin-" + productId);
+    if(!input) return;
+
+    const text = input.value.trim();
+
+    if(text === ""){
+        alert("Please type a message.");
+        return;
+    }
+
+    const p = getProducts().find(x => x.id === productId);
+
+    if(!p || p.status === "sold"){
+        alert("This item is no longer available.");
+        renderProducts();
+        return;
+    }
+
+    if(p.seller === currentUser){
+        alert("You cannot chat with yourself.");
+        return;
+    }
+
+    const chat = ensureChat(p);
+
+    addToChat(chat.id, {from:currentUser, text:text});
+
+    drafts["bin-" + productId] = "";
+    openChats[productId] = true;
+
+    renderProducts();
+    scrollChats();
+
+    const again = document.getElementById("bin-" + productId);
+    if(again) again.focus();
+}
+
+/* ==================================================
+          MESSAGES PAGE (buyer and seller)
+=================================================== */
+
+function lastTime(chat){
+    return chat.messages.length ? chat.messages[chat.messages.length - 1].time : 0;
+}
+
+function renderMessages(){
+
+    const box      = document.getElementById("messagesList");
+    const products = getProducts();
+
+    const chats = getChats()
+        .filter(c => c.buyer === currentUser || c.seller === currentUser)
+        .filter(c => c.messages.length > 0)
+        .sort((a, b) => lastTime(b) - lastTime(a));
+
+    if(chats.length === 0){
+        box.innerHTML = '<div class="empty">No conversations yet. Click Bargain on a product to chat with its seller, ' +
+            'or wait for buyers to message you about your products.</div>';
+        return;
+    }
+
+    box.innerHTML = chats.map(function(c){
+
+        const p         = products.find(x => x.id === c.productId);
+        const iAmSeller = c.seller === currentUser;
+        const other     = userName(iAmSeller ? c.buyer : c.seller);
+        const closed    = !p || p.status === "sold";
+
+        let controls = "";
+
+        if(closed){
+            controls = '<div class="waiting">This item is sold, so the chat is closed.</div>';
+        }
+        else{
+
+            controls =
+                '<input class="bargainInput" data-draft="1" id="min-' + c.id + '" placeholder="Type your message..." value="' + draftValue("min-" + c.id) + '">' +
+                '<button class="sendBtn" data-action="sendChat" data-id="' + c.id + '">Send Message</button>';
+
+            if(iAmSeller){
+                controls +=
+                    (c.agreed ? '<div class="waiting">Current agreed price: <b>₹' + esc(c.agreed) + '</b></div>' : '') +
+                    '<div class="priceRow">' +
+                        '<input type="number" min="1" class="bargainInput" data-draft="1" id="pin-' + c.id + '" placeholder="Agreed price (₹)" value="' + draftValue("pin-" + c.id) + '">' +
+                        '<button class="agreeBtn" data-action="agree" data-id="' + c.id + '">🤝 ' + (c.agreed ? 'Update price' : 'Agree on price') + '</button>' +
+                    '</div>';
+            }
+            else if(c.agreed){
+                controls +=
+                    '<div class="agreedPrice open">' +
+                    '<b>🤝 Seller agreed on a price!</b><br><br>Final Price: ₹' + esc(c.agreed) +
+                    '<button class="miniConfirm" data-action="orderAgreed" data-id="' + p.id + '">✅ Confirm Order</button>' +
+                    '</div>';
+            }
+            else{
+                controls += '<div class="waiting">Waiting for the seller to agree on a price.</div>';
+            }
+        }
+
+        return '<div class="chatCard">' +
+            '<div class="chatHead">' +
+                '<b>' + esc(p ? p.name : c.productName) + '</b>' + (p ? ' — Listed at ₹' + esc(p.price) : '') + '<br>' +
+                'Chat with <b>' + esc(other) + '</b> ' +
+                '<span class="roleTag">You are the ' + (iAmSeller ? 'seller' : 'buyer') + '</span>' +
+            '</div>' +
+            '<div class="chatMessages">' + threadHTML(c) + '</div>' +
+            controls +
+            '</div>';
+
+    }).join("");
+}
+
+function sendFromMessages(chatId){
+
+    const input = document.getElementById("min-" + chatId);
+    if(!input) return;
+
+    const text = input.value.trim();
+
+    if(text === ""){
+        alert("Please type a message.");
+        return;
+    }
+
+    if(!addToChat(chatId, {from:currentUser, text:text})) return;
+
+    drafts["min-" + chatId] = "";
+
+    renderMessages();
+    scrollChats();
+
+    const again = document.getElementById("min-" + chatId);
+    if(again) again.focus();
+}
+
+/* Seller confirms the final price with this buyer */
+function agreePrice(chatId){
+
+    const chat = getChats().find(c => c.id === chatId);
+
+    if(!chat || chat.seller !== currentUser) return;
+
+    const input = document.getElementById("pin-" + chatId);
+    const price = Number(input ? input.value : 0);
+
+    if(!price || price <= 0){
+        alert("Enter a valid price in rupees.");
+        return;
+    }
+
+    addToChat(chatId, {
+        system: true,
+        text: "Seller agreed on the price ₹" + price + ". The buyer can now confirm the order.",
+        setAgreed: price
+    });
+
+    drafts["pin-" + chatId] = "";
+
+    renderMessages();
+    scrollChats();
+}
+
+/* ==================================================
+                    START ORDER
+=================================================== */
+
+function startOrder(id, useAgreed){
+
+    const p = getProducts().find(x => x.id === id);
+    if(!p) return;
+
+    if(p.status === "sold"){
+        alert("Sorry, this item is already sold.");
+        refreshCurrent();
+        return;
+    }
+
+    if(p.seller === currentUser){
+        alert("You cannot buy your own product.");
+        return;
+    }
+
+    let price = p.price;
+
+    if(useAgreed){
+        const chat = findChat(id, currentUser);
+        if(chat && chat.agreed) price = chat.agreed;
+    }
+
+    selectedProduct = p;
+    selectedPrice   = price;
+
+    document.getElementById("orderSuccess").style.display = "none";
+
+    showSection("orders");
+    window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ==================================================
+                    ORDER PAGE
+=================================================== */
+
+function renderOrderPage(){
+
+    document.getElementById("orderProduct").innerText =
+        selectedProduct ? selectedProduct.name : "-";
+
+    document.getElementById("orderPrice").innerText =
+        selectedProduct ? selectedPrice : "-";
+
+    const orders = load(KEY_ORDERS, []).filter(o => o.buyer === currentUser).reverse();
+    const box = document.getElementById("orderHistory");
+
+    if(orders.length === 0){
+        box.innerHTML = '<div class="empty">You have not placed any orders yet.</div>';
+        return;
+    }
+
+    box.innerHTML = orders.map(function(o){
+        return '<div class="historyItem">' +
+            '<b>' + esc(o.product) + '</b> — ₹' + esc(o.price) + '<br>' +
+            'Meeting location: ' + esc(o.location) + '<br>' +
+            'Seller: ' + esc(o.sellerName) + '<br>' +
+            'Date: ' + esc(o.date) +
+            '</div>';
+    }).join("");
+}
+
+/* ==================================================
+                    FINAL ORDER
+=================================================== */
+
+function confirmOrder(){
+
+    if(!selectedProduct){
+        alert("Please choose a product first (go to Products and click Confirm Order).");
+        return;
+    }
+
+    const name     = document.getElementById("buyerName").value.trim();
+    const phone    = document.getElementById("buyerPhone").value.trim();
+    const address  = document.getElementById("buyerAddress").value.trim();
+    const location = document.getElementById("meetingLocation").value.trim();
+
+    if(!name || !phone || !address || !location){
+        alert("Please fill all order details.");
+        return;
+    }
+
+    const products = getProducts();
+    const p = products.find(x => x.id === selectedProduct.id);
+
+    if(!p || p.status === "sold"){
+        alert("Sorry, this item was just sold or removed.");
+        selectedProduct = null;
+        renderOrderPage();
+        return;
+    }
+
+    p.status = "sold";
+    p.soldTo = currentUser;
+    save(KEY_PRODUCTS, products);
+
+    const orders = load(KEY_ORDERS, []);
+    orders.push({
+        id: "o" + Date.now(),
+        productId: p.id,
+        product: p.name,
+        price: selectedPrice,
+        buyer: currentUser,
+        seller: p.seller,
+        sellerName: p.sellerName,
+        name: name,
+        phone: phone,
+        address: address,
+        location: location,
+        date: new Date().toLocaleString()
+    });
+    save(KEY_ORDERS, orders);
+
+    document.getElementById("successProduct").innerText  = p.name;
+    document.getElementById("successPrice").innerText    = selectedPrice;
+    document.getElementById("successLocation").innerText = location;
+    document.getElementById("orderSuccess").style.display = "block";
+
+    selectedProduct = null;
+
+    document.getElementById("buyerAddress").value    = "";
+    document.getElementById("meetingLocation").value = "";
+
+    renderOrderPage();
+    alert("🎉 Your order has been confirmed! The item is now marked as Sold.");
+}
+
+/* ==================================================
+                  ADD PRODUCT (SELL)
+=================================================== */
+
+/* Shrink the photo so it fits in browser storage */
+function readImage(file, callback){
+
+    if(!file){ callback(""); return; }
+
+    const reader = new FileReader();
+
+    reader.onload = function(ev){
+        const img = new Image();
+
+        img.onload = function(){
+            const max   = 500;
+            const scale = Math.min(1, max / Math.max(img.width, img.height));
+            const canvas = document.createElement("canvas");
+
+            canvas.width  = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            callback(canvas.toDataURL("image/jpeg", 0.7));
+        };
+
+        img.onerror = function(){ callback(""); };
+        img.src = ev.target.result;
+    };
+
+    reader.onerror = function(){ callback(""); };
+    reader.readAsDataURL(file);
+}
+
+function addProduct(){
+
+    const name        = document.getElementById("productName").value.trim();
+    const price       = Number(document.getElementById("productPrice").value);
+    const description = document.getElementById("productDescription").value.trim();
+    const category    = document.getElementById("category").value;
+    const file        = document.getElementById("productImage").files[0];
+
+    if(!name || !price || price <= 0 || !description){
+        alert("Please fill all product details.");
+        return;
+    }
+
+    readImage(file, function(imageData){
+
+        const products = getProducts();
+
+        products.push({
+            id: "p" + Date.now(),
+            name: name,
+            category: category,
+            price: price,
+            emoji: "🛍️",
+            description: description,
+            seller: currentUser,
+            sellerName: userName(currentUser),
+            status: "available",
+            image: imageData
+        });
+
+        if(!save(KEY_PRODUCTS, products)) return;
+
+        alert("✅ Product published successfully!");
+
+        document.getElementById("productName").value = "";
+        document.getElementById("productPrice").value = "";
+        document.getElementById("productDescription").value = "";
+        document.getElementById("productImage").value = "";
+
+        document.getElementById("search").value = "";
+        showSection("products");
+    });
+}
+
+/* ==================================================
+              MARK AS SOLD / REMOVE
+=================================================== */
+
+function markSold(id){
+
+    if(!confirm("Mark this product as sold?")) return;
+
+    const products = getProducts();
+    const p = products.find(x => x.id === id);
+
+    if(!p || p.seller !== currentUser) return;
+
+    p.status = "sold";
+    save(KEY_PRODUCTS, products);
+
+    refreshCurrent();
+}
+
+function removeProduct(id){
+
+    if(!confirm("Remove this product permanently?")) return;
+
+    let products = getProducts();
+    const p = products.find(x => x.id === id);
+
+    if(!p || p.seller !== currentUser) return;
+
+    products = products.filter(x => x.id !== id);
+    save(KEY_PRODUCTS, products);
+
+    /* delete the chats of this product too */
+    save(KEY_CHATS, getChats().filter(c => c.productId !== id));
+
+    refreshCurrent();
+}
+
+/* ==================================================
+                  MY LISTINGS PAGE
+=================================================== */
+
+function renderMyListings(){
+
+    const box    = document.getElementById("myListingsList");
+    const items  = getProducts().filter(p => p.seller === currentUser);
+    const orders = load(KEY_ORDERS, []);
+
+    if(items.length === 0){
+        box.innerHTML = '<div class="empty">You have not listed anything yet. Use the Sell page to add a product.</div>';
+        return;
+    }
+
+    box.innerHTML = items.map(function(p){
+
+        const isSold = p.status === "sold";
+        const order  = orders.find(o => o.productId === p.id);
+
+        let buyerInfo = "";
+
+        if(isSold && order){
+            buyerInfo = '<div style="font-size:13px;color:#555;margin-top:6px;line-height:1.6">' +
+                'Sold to <b>' + esc(order.name) + '</b> for ₹' + esc(order.price) + '<br>' +
+                'Phone: ' + esc(order.phone) + '<br>' +
+                'Meet at: ' + esc(order.location) +
+                '</div>';
+        }
+
+        return '<div class="listRow">' +
+            '<div class="thumb">' + productImageHTML(p) + '</div>' +
+            '<div class="info">' +
+                '<b>' + esc(p.name) + '</b><br>' +
+                '₹' + esc(p.price) + ' &nbsp; ' +
+                (isSold ? '<span class="soldText">SOLD</span>' : '<span class="availBadge">AVAILABLE</span>') +
+                buyerInfo +
+            '</div>' +
+            '<div class="actions">' +
+                (isSold ? '' : '<button style="background:#f59e0b" data-action="markSold" data-id="' + p.id + '">✔ Mark as Sold</button>') +
+                '<button style="background:#dc2626" data-action="remove" data-id="' + p.id + '">🗑️ Remove</button>' +
+            '</div>' +
+            '</div>';
+
+    }).join("");
+}
+
+/* ==================================================
+   LIVE UPDATE: when the other person sends a message
+   (in another tab/window of the same browser),
+   this page refreshes by itself.
+=================================================== */
+
+window.addEventListener("storage", function(){
+    if(!currentUser) return;
+    refreshCurrent();
+});
+
+/* ==================================================
+              AUTO LOGIN IF SESSION EXISTS
+=================================================== */
+
+(function init(){
+    const saved = getSession();
+    const users = load(KEY_USERS, []);
+
+    if(saved && users.some(u => u.username === saved)){
+        startSession(saved);
+    }
+})();
+
+</script>
+
+</body>
+</html>
