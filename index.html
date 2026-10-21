@@ -596,6 +596,10 @@ function register(){
 =================================================== */
 
 function login(){
+    if(!user || !pass){
+    showMsg("loginError", "Please enter username and password.");
+    return;
+}
 
     const user = document.getElementById("loginUser").value.trim().toLowerCase();
     const pass = document.getElementById("loginPass").value;
